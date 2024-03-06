@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    register-with-eureka: true
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: be-attendance
+          uri: http://localhost:8090
+          predicates:
+            - Path=/attendance/**
+          filters:
+            - AuthFilterConfig
+
+        - id: be-lesson
+          uri: http://localhost:8091
+          predicates:
+            - Path=/lesson/**
+          filters:
+            - AuthFilterConfig
+
+        - id: be-user
+          uri: http://localhost:8092
+          predicates:
+            - Path=/user/**
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/schforce
+#    username: postgres
+#    password: postgres
+#    driver-class-name: org.postgresql.Driver
+#  jpa:
+#    properties:
+#      hibernate:
+#        default_schema: public
+#  jpa:
+#    properties:
+#      hibernate:
+#        temp:
+#          use_jdbc_metadata_defaults: false
+#    hibernate:
+#      ddl-auto: none

@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  pg15:
+    image: postgres:15.4-alpine3.18
+    environment:
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
