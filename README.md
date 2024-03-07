@@ -10,7 +10,7 @@ Simple microservice application using Java language, Springboot framework, and V
 ![school-foo](images/w4.png?raw=true "school-foo")
 ![school-foo](images/w1.png?raw=true "school-foo")
 ![school-foo](images/w2.png?raw=true "school-foo")
-![school-foo](images/w3.png?raw=true "school-foo")
+![school-foo](images/w5.png?raw=true "school-foo")
 
 #### - mw-config
 retrieve all configs on each service
