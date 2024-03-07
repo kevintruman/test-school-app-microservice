@@ -1,7 +1,7 @@
 package com.schfoo.force.beuser.config;
 
 import com.schfoo.force.beuser.repo.UserSessionRepo;
-import com.schfoo.force.helper.exception.ResException;
+import com.schfoo.force.helper.util.ExceptionUtil;
 import com.schfoo.force.helper.util.HttpUtil;
 import com.schfoo.force.helper.util.JwtUtil;
 import com.schfoo.force.model.entity.user.UserSessionEntity;
@@ -46,7 +46,7 @@ public class AuthFilterConfig extends OncePerRequestFilter {
 
                 UserSessionEntity userSession = userSessionRepo.getOneByIdAndIsActive(subject);
                 if (Objects.isNull(userSession)) {
-                    throw ResException.build("invalid session");
+                    throw ExceptionUtil.thr("invalid session", false);
                 }
 
                 UserDetails userDetails = userDetailConfig.loadUserByUsername(userSession.getUser().getUsername());

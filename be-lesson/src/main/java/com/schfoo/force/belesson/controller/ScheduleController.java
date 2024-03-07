@@ -17,7 +17,7 @@ public class ScheduleController extends BaseController {
 
     @GetMapping
     public ResponseEntity<?> getLessonNow() {
-        return wrap(() -> scheduleService.getLessonNow());
+        return wrap(() -> scheduleService.getTeacherLessonNow());
     }
 
 }

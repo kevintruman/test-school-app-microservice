@@ -42,6 +42,7 @@ public class UserRes implements Serializable {
                 .username(userMain.getUsername())
                 .email(userMain.getEmail())
                 .userType(userMain.getUserType())
+                .code(userMain.getCode())
                 .fullName(userMain.getFullName())
                 .dob(userMain.getDob())
                 .pob(userMain.getPob())

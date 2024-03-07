@@ -8,15 +8,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("${app-prefix-path}/v1.0/user")
-public class UserController extends BaseController {
+@RequestMapping("${app-prefix-path}/v1.0/student")
+public class StudentController extends BaseController {
 
     @Autowired
     private UserService userService;
 
     @GetMapping("/corporate/{corporateId}")
-    public ResponseEntity<?> getUsers(
-            @PathVariable String corporateId, @RequestParam(required = false) String levelClassId,
+    public ResponseEntity<?> getByCorporateId(
+            @PathVariable String corporateId,
+            @RequestParam(required = false) String fullName,
             @RequestParam(required = false) String page, @RequestParam(required = false) String size) {
         if (Strings.isBlank(page)) {
             page = "1";
@@ -27,10 +28,10 @@ public class UserController extends BaseController {
         int finalPage = Integer.parseInt(page);
         int finalSize = Integer.parseInt(size);
 
-        Long finalLevelClassId = Strings.isBlank(levelClassId) ? null : Long.valueOf(levelClassId);
+        String finalFullName = Strings.isBlank(fullName) ? "" : fullName;
 
-        return wrap(() -> userService.getUsers(
-                Long.valueOf(corporateId), finalLevelClassId, finalPage, finalSize));
+        return wrap(() -> userService.getStudentsByCorporateId(
+                Long.valueOf(corporateId), finalFullName, finalPage, finalSize));
     }
 
     @GetMapping("/{userId}")

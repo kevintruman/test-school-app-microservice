@@ -1,10 +1,16 @@
 
 # School Foo
 
-Simple microservice application using java technology and springboot framework.
+Simple microservice application using Java language, Springboot framework, and Vaadin framework.
 
 ### Architecture
 ![school-foo](images/ss.png?raw=true "school-foo")
+
+### ScreenShot
+![school-foo](images/w4.png?raw=true "school-foo")
+![school-foo](images/w1.png?raw=true "school-foo")
+![school-foo](images/w2.png?raw=true "school-foo")
+![school-foo](images/w3.png?raw=true "school-foo")
 
 #### - mw-config
 retrieve all configs on each service
@@ -22,7 +28,7 @@ service for authorization
 as the main service of the application
 
 #### - fe-app
-as the web application, open in http://localhost:8094/
+as the web application using Vaadin framework, open in http://localhost:8094/
 
 ## Required
 
@@ -96,7 +102,7 @@ you can access the Api from http://localhost:8080
 ```bash
 $ java -jar fe-app/target/fe-app-1.0.0.jar
 ```
-you can access the web app from http://localhost:8094
+you can access the web app from http://localhost:8094, sign in with username and password `root`
 
 
 

@@ -2,9 +2,9 @@ package com.schfoo.force.beuser.service;
 
 import com.schfoo.force.beuser.repo.UserMainRepo;
 import com.schfoo.force.beuser.repo.UserSessionRepo;
-import com.schfoo.force.helper.exception.ResException;
 import com.schfoo.force.helper.exception.TrxException;
 import com.schfoo.force.helper.util.DateUtil;
+import com.schfoo.force.helper.util.ExceptionUtil;
 import com.schfoo.force.helper.util.JwtUtil;
 import com.schfoo.force.model.entity.user.UserMainEntity;
 import com.schfoo.force.model.entity.user.UserSessionEntity;
@@ -51,13 +51,13 @@ public class AuthService {
         UserMainEntity userMain = userMainRepo.getOneByUsernameOrEmailAndIsActive(signInReq.getUsername());
         if (Objects.isNull(userMain)) {
             log.error("user not found {}", signInReq.getUsername());
-            throw ResException.build("User not found");
+            throw ExceptionUtil.thr("User not found", false);
         }
 
         boolean isMatch = passwordEncoder.matches(signInReq.getPassword(), userMain.getPassword());
         if (!isMatch) {
             log.error("wrong password {}", userMain.getUsername());
-            throw ResException.build("User not found");
+            throw ExceptionUtil.thr("User not found", false);
         }
 
         // set security context
@@ -83,7 +83,7 @@ public class AuthService {
     public SignInRes validateToken(ValidateTokenReq validateTokenReq) {
         boolean valid = JwtUtil.isValid(jwtSecret, validateTokenReq.getToken());
         if (!valid) {
-            throw ResException.build("token not valid");
+            throw ExceptionUtil.thr("token not valid", false);
         }
 
         String subject = JwtUtil.getSubject(jwtSecret, validateTokenReq.getToken(), false);

@@ -1,10 +1,13 @@
 package com.schfoo.force.belesson.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.schfoo.force.belesson.repo.UserSessionRepo;
+import com.schfoo.force.helper.exception.TrxException;
 import com.schfoo.force.helper.util.ExceptionUtil;
 import com.schfoo.force.helper.util.HttpUtil;
 import com.schfoo.force.helper.util.JwtUtil;
 import com.schfoo.force.model.entity.user.UserMainEntity;
+import com.schfoo.force.model.entity.user.UserSessionEntity;
 import com.schfoo.force.model.web.req.ValidateTokenReq;
 import com.schfoo.force.model.web.res.SignInRes;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,12 +29,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
+@Transactional(rollbackFor = TrxException.class)
 public class SessionService {
 
     @Autowired
     private HttpServletRequest httpServletRequest;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private UserSessionRepo userSessionRepo;
 
     @Value("${app-jwt-secret}")
     private String jwtSecret;
@@ -84,6 +91,27 @@ public class SessionService {
         }
 
         return new UserMainEntity(signInRes.getUser().getId());
+    }
+
+    public UserMainEntity getUserLocal(boolean rollbackIfError) {
+        String token = HttpUtil.parseToken(httpServletRequest);
+        if (Strings.isBlank(token)) {
+            throw ExceptionUtil.thr("invalid sesion", rollbackIfError);
+        }
+
+        boolean isValid = JwtUtil.isValid(jwtSecret, token);
+        if (!isValid) {
+            throw ExceptionUtil.thr("invalid sesion", rollbackIfError);
+        }
+
+        String subject = JwtUtil.getSubject(jwtSecret, token, rollbackIfError);
+        UserSessionEntity userSession = userSessionRepo.getOneByIdAndIsActive(Long.valueOf(subject));
+
+        if (Objects.isNull(userSession) || Objects.isNull(userSession.getUser())) {
+            throw ExceptionUtil.thr("invalid sesion", rollbackIfError);
+        }
+
+        return userSession.getUser();
     }
 
 }

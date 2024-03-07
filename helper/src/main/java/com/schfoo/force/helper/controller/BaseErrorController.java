@@ -31,11 +31,11 @@ public abstract class BaseErrorController {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
         if (exception instanceof ResException) {
-            errors = List.of(((ResException) exception).getMsg());
+            errors = ((ResException) exception).getErrorsMessage();
             httpStatus = HttpStatus.BAD_REQUEST;
         }
         else if (exception instanceof TrxException) {
-            errors = List.of(((TrxException) exception).getMsg());
+            errors = ((TrxException) exception).getErrorsMessage();
             httpStatus = HttpStatus.BAD_REQUEST;
         }
         else {

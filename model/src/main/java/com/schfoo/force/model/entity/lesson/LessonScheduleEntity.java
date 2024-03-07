@@ -19,13 +19,13 @@ public class LessonScheduleEntity extends BaseEntity {
     // DateConstant.Day
     private String day;
 
-    // format 'HH:mm'
+    // format 'Hmm'
     @Column(name = "start_time")
-    private String startTime;
+    private Integer startTime;
 
-    // format 'HH:mm'
+    // format 'Hmm'
     @Column(name = "end_time")
-    private String endTime;
+    private Integer endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")

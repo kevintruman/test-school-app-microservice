@@ -1,10 +1,12 @@
 package com.schfoo.force.beattendance.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.schfoo.force.beattendance.repo.UserSessionRepo;
 import com.schfoo.force.helper.util.ExceptionUtil;
 import com.schfoo.force.helper.util.HttpUtil;
 import com.schfoo.force.helper.util.JwtUtil;
 import com.schfoo.force.model.entity.user.UserMainEntity;
+import com.schfoo.force.model.entity.user.UserSessionEntity;
 import com.schfoo.force.model.web.req.ValidateTokenReq;
 import com.schfoo.force.model.web.res.SignInRes;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +33,8 @@ public class SessionService {
     private HttpServletRequest httpServletRequest;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private UserSessionRepo userSessionRepo;
 
     @Value("${app-jwt-secret}")
     private String jwtSecret;
@@ -84,6 +88,28 @@ public class SessionService {
         }
 
         return new UserMainEntity(signInRes.getUser().getId());
+    }
+
+
+    public UserMainEntity getUserLocal(boolean rollbackIfError) {
+        String token = HttpUtil.parseToken(httpServletRequest);
+        if (Strings.isBlank(token)) {
+            throw ExceptionUtil.thr("invalid sesion", rollbackIfError);
+        }
+
+        boolean isValid = JwtUtil.isValid(jwtSecret, token);
+        if (!isValid) {
+            throw ExceptionUtil.thr("invalid sesion", rollbackIfError);
+        }
+
+        String subject = JwtUtil.getSubject(jwtSecret, token, rollbackIfError);
+        UserSessionEntity userSession = userSessionRepo.getOneByIdAndIsActive(Long.valueOf(subject));
+
+        if (Objects.isNull(userSession) || Objects.isNull(userSession.getUser())) {
+            throw ExceptionUtil.thr("invalid sesion", rollbackIfError);
+        }
+
+        return userSession.getUser();
     }
 
 }

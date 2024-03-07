@@ -4,23 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schfoo.force.helper.model.WebResponse;
 import com.schfoo.force.helper.util.ExceptionUtil;
 import com.schfoo.force.model.web.res.SignInRes;
-import com.vaadin.flow.component.HtmlComponent;
-import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.server.VaadinSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,8 +26,6 @@ public class ApiService {
     private SessionService sessionService;
     @Autowired
     private RestTemplate restTemplate;
-
-    private Notification notifView = new Notification();
 
     public <T> T fetch(String url, HttpMethod method, Object reqBody, Class<T> clazz, boolean isSecure) {
         HttpHeaders headers = new HttpHeaders();
@@ -57,15 +51,18 @@ public class ApiService {
             }
 
             ObjectMapper objectMapper = new ObjectMapper();
-            return (T) objectMapper.convertValue(body.get("data"), clazz);
+            return objectMapper.convertValue(body.get("data"), clazz);
 
         } catch (HttpStatusCodeException e) {
             String errorMsg = e.getMessage();
             log.error("error fetch: {}", errorMsg);
 
             WebResponse<?> responseBodyAs = e.getResponseBodyAs(WebResponse.class);
-            if (Objects.nonNull(responseBodyAs)) {
-                errorMsg = String.join(" | ", responseBodyAs.getErrors());
+            if (Objects.nonNull(responseBodyAs) && !CollectionUtils.isEmpty(responseBodyAs.getErrors())) {
+                if (e.getStatusCode().value() == 401) {
+                    VaadinSession.getCurrent().getSession().invalidate();
+                }
+                throw ExceptionUtil.thr(responseBodyAs.getErrors(), false);
             }
 
             throw ExceptionUtil.thr(errorMsg, false);

@@ -36,4 +36,8 @@ public class AttendanceMainEntity extends BaseEntity {
     private Double latOut;
     private Double lonOut;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attendance_lesson_id")
+    private AttendanceLessonEntity lessonSchedule;
+
 }

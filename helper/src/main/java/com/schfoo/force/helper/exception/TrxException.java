@@ -2,15 +2,18 @@ package com.schfoo.force.helper.exception;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@NoArgsConstructor
 public class TrxException extends RuntimeException {
 
-    private String msg;
+    private List<String> errorsMessage;
 
-    public static TrxException build(String msg) {
-        return TrxException.builder().msg(msg).build();
+    public TrxException(List<String> errorsMessage) {
+        super(String.join("|", errorsMessage));
+        setErrorsMessage(errorsMessage);
     }
 
 }

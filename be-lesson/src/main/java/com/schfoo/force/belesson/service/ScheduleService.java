@@ -27,8 +27,8 @@ public class ScheduleService {
     @Autowired
     private LessonScheduleRepo lessonScheduleRepo;
 
-    public List<LessonScheduleRes> getLessonNow() {
-        UserMainEntity user = sessionService.getUser(false);
+    public List<LessonScheduleRes> getTeacherLessonNow() {
+        UserMainEntity user = sessionService.getUserLocal(false);
         privilegeService.checkByUserType(user, List.of(UserConstant.Type.teacher), false);
 
         Calendar calendar = Calendar.getInstance();

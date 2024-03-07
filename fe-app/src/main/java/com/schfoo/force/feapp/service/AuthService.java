@@ -7,6 +7,7 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WrappedSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,17 @@ public class AuthService {
     @Autowired
     private ApiService apiService;
 
-    private static final String signInUrl = "http://localhost:8080/user/v1.0/auth/sign-in";
+    @Value("${app-api-endpoint}")
+    private String apiEndpoint;
+    private static final String signInUrl = "/user/v1.0/auth/sign-in";
 
     public void login(String username, String password) {
         SignInReq payload = new SignInReq();
         payload.setUsername(username);
         payload.setPassword(password);
 
-        SignInRes signInRes = apiService.fetchNotSecure(signInUrl, HttpMethod.POST, payload, SignInRes.class);
+        SignInRes signInRes = apiService.fetchNotSecure(
+                apiEndpoint + signInUrl, HttpMethod.POST, payload, SignInRes.class);
 
         WrappedSession session = VaadinSession.getCurrent().getSession();
         session.setAttribute("sessionId", signInRes);

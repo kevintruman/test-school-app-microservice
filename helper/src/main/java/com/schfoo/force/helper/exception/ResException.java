@@ -2,15 +2,18 @@ package com.schfoo.force.helper.exception;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@NoArgsConstructor
 public class ResException extends RuntimeException {
 
-    private String msg;
+    private List<String> errorsMessage;
 
-    public static ResException build(String msg) {
-        return ResException.builder().msg(msg).build();
+    public ResException(List<String> errorsMessage) {
+        super(String.join("|", errorsMessage));
+        setErrorsMessage(errorsMessage);
     }
 
 }

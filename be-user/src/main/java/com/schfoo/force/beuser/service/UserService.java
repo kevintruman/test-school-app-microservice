@@ -22,9 +22,11 @@ public class UserService {
     @Autowired
     private UserMainRepo userMainRepo;
 
-    public PageDataResponse<UserRes> getUsers(Long corporateId, Long levelClassId, int page, int size) {
-        Page<UserMainEntity> userMainEntityPage = userMainRepo.getPageByCorporateIdAndLevelClassIdAndIsActive(
-                corporateId, levelClassId, PageRequest.of(page - 1, size));
+    public PageDataResponse<UserRes> getStudentsByCorporateId(
+            Long corporateId, String fullName, int page, int size) {
+        Page<UserMainEntity> userMainEntityPage = userMainRepo
+                .getPageByCorporateIdAndFullNameLikeAndIsStudentTypeAndIsActive(
+                        corporateId, fullName, PageRequest.of(page - 1, size));
         List<UserRes> list = userMainEntityPage.map(UserRes::build).toList();
 
         return new PageDataResponse<>(userMainEntityPage, list);
